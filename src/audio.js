@@ -1,22 +1,46 @@
 export class AudioSystem {
-  constructor(){this.enabled=true;this.volume=.55;this.buffers=new Map();this.voices=new Set();this.music=new Audio();this.music.loop=true;this.music.preload='none';this.track=0;this.manifest=null;this.archiveOpen=false;}
+  constructor(){this.enabled=true;this.volume=.55;this.buffers=new Map();this.voices=new Set();this.music=new Audio();this.music.loop=true;this.music.preload='none';this.track=0;this.manifest=null;this.archiveOpen=false;this.playRequest=0;this.pending=null;this.blocked=false;this.lastError=null;this.wanted=false;}
   async init(){const res=await fetch('assets/audio/manifest.json');if(!res.ok)throw Error('Audio manifest unavailable');this.manifest=await res.json();return this.manifest;}
-  async unlock(){
+  async unlock(number){
+    // Start the media element while still on the launch gesture's stack.
+    // Resuming Web Audio alone does not unlock this separate HTMLAudioElement.
+    if(number!==undefined)this.playMusic(number);
     if(!this.ctx){this.ctx=new AudioContext();this.gain=this.ctx.createGain();this.gain.connect(this.ctx.destination);this.updateVolume();}
     await this.ctx.resume();
     if(!this.loading)this.loading=Promise.all(this.manifest.sfx.map(async s=>{const res=await fetch(`assets/audio/${s.wav}`);if(!res.ok)throw Error(`Missing effect ${s.name}`);this.buffers.set(s.slot,await this.ctx.decodeAudioData(await res.arrayBuffer()));}));
     await this.loading;
   }
-  updateVolume(){this.music.volume=this.enabled?this.volume*.5:0;if(this.gain)this.gain.gain.value=this.enabled?this.volume*.4:0;}
+  updateVolume(){this.music.muted=!this.enabled;this.music.volume=this.enabled?this.volume*.5:0;if(this.gain)this.gain.gain.value=this.enabled?this.volume*.4:0;}
   setVolume(value){this.volume=value;this.updateVolume();}
   mute(){this.enabled=!this.enabled;this.updateVolume();return this.enabled;}
   playMusic(number){
     if(!this.manifest)return;
-    if(this.track!==number){const track=this.manifest.music.find(t=>t.number===number);if(!track)return;this.track=number;this.music.src=`assets/audio/${this.music.canPlayType('audio/ogg; codecs="vorbis"')?track.ogg:track.mp3}`;}
-    this.updateVolume();if(!this.archiveOpen&&this.enabled)this.music.play().catch(()=>{});
+    if(this.track!==number){const track=this.manifest.music.find(t=>t.number===number);if(!track)return;this.playRequest++;this.pending=null;this.blocked=false;this.lastError=null;this.track=number;this.music.src=`assets/audio/${this.music.canPlayType('audio/ogg; codecs="vorbis"')?track.ogg:track.mp3}`;}
+    this.updateVolume();return this.startMusic();
   }
-  pause(){this.music.pause();for(const voice of this.voices)try{voice.stop();}catch{}this.voices.clear();}
-  resume(){if(!this.archiveOpen&&this.enabled&&this.track)this.music.play().catch(()=>{});}
+  startMusic(){
+    if(this.archiveOpen||!this.enabled||!this.track)return;
+    this.wanted=true;
+    if(this.pending)return this.pending;
+    const request=++this.playRequest;
+    // Invoke play synchronously; only its completion is asynchronous.
+    let playing;try{playing=this.music.play();}catch(error){playing=Promise.reject(error);}
+    this.pending=Promise.resolve(playing).then(()=>{
+      if(request!==this.playRequest)return;
+      this.blocked=false;this.lastError=null;
+    },error=>{
+      if(request!==this.playRequest)return;
+      this.blocked=error.name==='NotAllowedError';this.lastError={name:error.name,message:error.message};
+    }).finally(()=>{if(request===this.playRequest)this.pending=null;});
+    return this.pending;
+  }
+  pause(){this.wanted=false;this.playRequest++;this.pending=null;this.music.pause();for(const voice of this.voices)try{voice.stop();}catch{}this.voices.clear();}
+  resume(){
+    if(this.archiveOpen||!this.enabled)return;
+    if(this.ctx&&this.ctx.state!=='running')this.ctx.resume().catch(error=>console.warn('Audio context resume failed:',error));
+    return this.startMusic();
+  }
+  get status(){return {track:this.track,title:this.manifest?.music.find(t=>t.number===this.track)?.title||'',playing:!this.music.paused,enabled:this.enabled,blocked:this.blocked,error:this.lastError?{...this.lastError}:null,currentTime:this.music.currentTime,source:this.music.currentSrc||this.music.src,context:this.ctx?.state||'not initialized'};}
   effect(slot,rate=null){
     if(!this.enabled||!this.ctx||this.ctx.state!=='running'||this.archiveOpen||this.voices.size>=24)return;
     const buffer=this.buffers.get(slot);if(!buffer)return;

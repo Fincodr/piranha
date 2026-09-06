@@ -2,8 +2,8 @@ import {place} from './collision.js';
 import {colorizeLayer,collisionLayer,debugSnapshot,stepGame,idColor} from './debug-data.js';
 
 export class DebugUI {
-  constructor(game,renderer,{resetClock,refresh}){
-    Object.assign(this,{game,renderer,resetClock,refresh});
+  constructor(game,renderer,{resetClock,refresh,audio}){
+    Object.assign(this,{game,renderer,resetClock,refresh,audio});
     this.enabled=false;this.speed=1;this.updateMs=0;this.events=[];this.lastHud=0;
     this.cabinet=document.getElementById('cabinet');this.button=document.getElementById('debug-toggle');
     this.canvas=document.createElement('canvas');this.canvas.width=320;this.canvas.height=200;this.canvas.className='debug-canvas';this.canvas.hidden=true;this.canvas.setAttribute('aria-hidden','true');
@@ -50,7 +50,7 @@ export class DebugUI {
     this.resetClock();if(this.game.state==='playing')this.game.pause();
     const n=stepGame(this.game,count);this.refresh();this.renderHud();return n;
   }
-  snapshot(){return {...debugSnapshot(this.game),debug:{enabled:this.enabled,speed:this.speed,frameUpdateMs:this.updateMs,renderer:this.renderer.name,drawCalls:this.renderer.drawCalls,events:this.events.map(e=>({...e}))}};}
+  snapshot(){return {...debugSnapshot(this.game),audio:this.audio?.status,debug:{enabled:this.enabled,speed:this.speed,frameUpdateMs:this.updateMs,renderer:this.renderer.name,drawCalls:this.renderer.drawCalls,events:this.events.map(e=>({...e}))}};}
   layer(gutter=false){return collisionLayer(this.game.collision,gutter);}
   inspect(x,y){
     if(!this.enabled||!Number.isFinite(x)||!Number.isFinite(y)||x<0||x>=320||y<0||y>=200)return null;
@@ -73,6 +73,7 @@ export class DebugUI {
     this.actions.pause.textContent=s.state==='paused'?'Resume':'Pause';this.actions.pause.disabled=!['playing','paused'].includes(s.state);this.actions.step.disabled=this.actions.pause.disabled;
     this.readouts.stats.textContent=`${s.state} · level ${s.level} · tick ${s.tick}\n${s.simulationSeconds.toFixed(3)} simulation seconds · update ${this.updateMs.toFixed(2)} ms/frame\nPools: ${s.pools.actors}/264 actors · ${s.pools.shots}/512 bullets · ${s.pools.effects}/1024 FX\n${c?`Callback ${c.callback} · pending ${c.pending}\nWave timer ${c.spawnTimer} · remaining spawns ${c.remainingSpawns}\nCompletion mask ${c.completionMask} · hold ${c.completionHold} · targets ${c.completionCount}\nPickups ${c.pickups} · timeout ${c.pickupTimeout}s`:'No campaign running'}\nLast physics tick: ${t.shotQueries||0} shot samples · ${t.circleTests||0} circle tests\n${t.layerPixels||0} layer pixels tested · ${t.projectileHits||0} bullet hits\n${t.contactChecks||0} contact checks · ${t.contactHits||0} overlaps`;
     const list=this.readouts.objects,signature=s.objects.map(o=>`${o.id}:${o.generation||0}`).join(',');
+    if(s.audio)this.readouts.stats.textContent+=`\nMusic ${s.audio.track}: ${s.audio.title} · ${s.audio.playing?'playing':'paused'} · ${s.audio.currentTime.toFixed(1)}s${s.audio.error?'\nAudio error: '+s.audio.error.name+' · '+s.audio.error.message:''}`;
     if(signature!==this.objectSignature){
       const selected=list.value;list.replaceChildren(new Option('Choose object…',''));
       for(const o of s.objects)list.add(new Option(`${o.id} · ${o.kind} · ${o.key}`,String(o.id)));

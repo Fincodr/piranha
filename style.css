@@ -95,3 +95,4 @@ html.viewport-mode,html.viewport-mode body{overflow:hidden;overscroll-behavior:n
 @media(min-width:900px){.cabinet:not(.expanded):not(:fullscreen) #debug-panel{position:fixed;top:90px;right:12px;max-height:calc(100dvh - 102px)}}
 .cabinet:is(:fullscreen,.expanded) .console{padding:0 6px;gap:0}
 .cabinet:is(:fullscreen,.expanded) .console>span{line-height:10px}
+.console button.audio-retry{color:var(--accent);outline:1px solid var(--accent)}

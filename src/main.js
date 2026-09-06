@@ -48,6 +48,7 @@ const game=new Game((event,value)=>{
 function saveBest(){best=Math.max(best,game.score);try{localStorage.setItem('piranha.best',String(best));}catch{}$('best').textContent=String(best).padStart(6,'0');}
 function showOverlay(label,title,copy,button){$('overlay-label').textContent=label;$('overlay-title').textContent=title;$('overlay-copy').textContent=copy;$('overlay-action').textContent=button;$('overlay').hidden=false;$('overlay-action').focus();}
 function updateHud(){
+  updateSoundButton();
   fullscreenView.setActive(ready&&game.state!=='title');
   touchControls.setEnabled(game.state==='playing');
   const intro=ready&&game.state==='title';$('intro-start').hidden=!intro;$('screen').classList.toggle('title-ready',intro);
@@ -63,7 +64,7 @@ async function launch(){
   launching=true;const count=Number($('players').value),difficulty=$('difficulty').value,level=Number($('start-level').value);
   try{
     saveBest();clearInput();
-    await audio.unlock().catch(e=>console.warn(e));
+    await audio.unlock(audio.manifest.campaignMusic[level-1]).catch(e=>console.warn(e));
     game.start(count,level,difficulty);canvas.focus();accumulator=0;
   }finally{launching=false;}
 }
@@ -79,7 +80,18 @@ $('launch').addEventListener('click',launch);
 $('overlay-action').addEventListener('click',()=>{if(game.state==='gameover')insertCoin();else if(game.state==='paused'){game.pause();canvas.focus();}else if(game.state==='cleared'){if(game.level<LEVELS.length)game.shop.open();else{game.next();canvas.focus();}}else launch();});
 $('return-title').addEventListener('click',()=>{saveBest();game.state='title';fullscreenView.exit();audio.pause();clearInput();$('overlay').hidden=true;$('pause').disabled=true;$('launch').innerHTML='Launch game <span>↗</span>';renderer.setBackground(backgrounds.title);renderer.begin();renderer.end();$('notice').textContent='';noticeUntil=0;updateHud();canvas.focus();});
 $('pause').addEventListener('click',()=>{game.pause();canvas.focus();});
-function mute(){let enabled=audio.mute();$('mute').innerHTML=enabled?'♪ <span>Sound on</span>':'♩ <span>Sound off</span>';if(enabled&&game.state==='playing')audio.resume();}
+function updateSoundButton(){
+  const retry=audio.enabled&&(audio.blocked||audio.lastError)&&game.state==='playing';
+  $('mute').innerHTML=retry?'♪ <span>Enable music</span>':audio.enabled?'♪ <span>Sound on</span>':'♩ <span>Sound off</span>';
+  $('mute').classList.toggle('audio-retry',!!retry);
+  $('mute').title=retry?`Tap to retry music: ${audio.lastError?.message||'Playback blocked'}`:audio.enabled?'Mute sound (M)':'Enable sound (M)';
+  $('mute').setAttribute('aria-label',retry?'Enable music':audio.enabled?'Mute sound':'Enable sound');
+}
+function mute(){
+  if(audio.enabled&&(audio.blocked||audio.lastError)&&game.state==='playing')audio.resume();
+  else if(audio.mute()&&game.state==='playing')audio.resume();
+  updateSoundButton();
+}
 $('mute').addEventListener('click',mute);
 function fullscreen(){return fullscreenView.toggle();}
 $('fullscreen').addEventListener('click',fullscreen);
@@ -160,10 +172,10 @@ try{
  const [atlas,data,bg,title,manifest,maskBytes]=await Promise.all([loadImage('assets/atlas.png?v=effects2'),fetch('assets/atlas.json?v=effects2').then(r=>r.json()),loadImage('assets/background1.png'),loadImage('assets/title-normal.png'),audio.init(),fetch('assets/collision.bin?v=effects2').then(r=>{if(!r.ok)throw Error('Could not load collision masks');return r.arrayBuffer();})]);
  game.collision=new CollisionWorld(new CollisionMasks(data,new Uint8Array(maskBytes)));
  renderer=new Renderer(canvas,atlas,data);shopUI=new ShopUI(game,atlas,data,()=>{clearInput();accumulator=0;if(game.state==='playing')canvas.focus();});backgrounds={1:bg,title};
- debugView=new DebugUI(game,renderer,{resetClock:()=>{clearInput();accumulator=0;},refresh:updateHud});
+ debugView=new DebugUI(game,renderer,{resetClock:()=>{clearInput();accumulator=0;},refresh:updateHud,audio});
  for(const n of new Set(LEVELS.map(level=>level.background)))if(n!==1)backgrounds[n]=await loadImage(`assets/background${n}.png`);
  renderer.setBackground(title);renderer.begin();renderer.end();buildArchive(manifest);ready=true;updateHud();
  $('launch').disabled=false;$('launch').innerHTML='Launch game <span>↗</span>';$('runtime').textContent=`${renderer.name} · Original assets loaded`;requestAnimationFrame(frame);
  // Snapshot/layer APIs return copies; explicit debug controls change time only.
- window.piranha={debug:{enable:(value=true)=>debugView.enable(value),snapshot:()=>debugView.snapshot(),layer:(gutter=false)=>debugView.layer(gutter),inspect:(x,y)=>debugView.inspect(x,y),step:(count=1)=>debugView.step(count)},get state(){return game.state;},get metrics(){return {renderer:renderer.name,drawCalls:renderer.drawCalls,actors:game.actors.count,shots:game.shots.count,effects:game.effects.count,level:game.level,score:game.score,difficulty:game.difficulty,maxHealth:game.maxHealth,players:game.players.map(p=>({x:p.x,y:p.y,hp:p.hp,lives:p.lives}))};}};
+ window.piranha={debug:{enable:(value=true)=>debugView.enable(value),snapshot:()=>debugView.snapshot(),layer:(gutter=false)=>debugView.layer(gutter),inspect:(x,y)=>debugView.inspect(x,y),step:(count=1)=>debugView.step(count)},get audio(){return audio.status;},get state(){return game.state;},get metrics(){return {renderer:renderer.name,drawCalls:renderer.drawCalls,actors:game.actors.count,shots:game.shots.count,effects:game.effects.count,level:game.level,score:game.score,difficulty:game.difficulty,maxHealth:game.maxHealth,players:game.players.map(p=>({x:p.x,y:p.y,hp:p.hp,lives:p.lives}))};}};
 }catch(error){console.error(error);$('runtime').textContent='Could not load game assets';$('notice').textContent=error.message;$('launch').textContent='Reload to retry';}

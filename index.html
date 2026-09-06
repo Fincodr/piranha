@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#111013"><title>Piranha — D-Designs, 1996</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header class="masthead"><a class="brand" href="./">PIRANHA<span>D-DESIGNS / 1996</span></a><div class="edition"><span class="status-dot"></span> JAVASCRIPT EDITION <span class="build">BUILD 0.1</span></div><button id="audio-open" class="quiet">♫ Sound archive</button></header>
+<main>
+ <div class="section-heading"><div><span class="eyebrow">BACK IN FLIGHT</span><h1>The original pixels. A new engine.</h1></div><span class="port-label">Campaign · Levels 1–20</span></div>
+ <div class="layout">
+  <section id="cabinet" class="cabinet" aria-label="Piranha game">
+   <div class="hud"><div><span>LEVEL</span><strong id="level">01</strong></div><div><span>SCORE</span><strong id="score">000000</strong></div><div><span>CREDITS</span><strong id="credits">0000</strong></div><div class="hull"><span>HULL <b id="hull-value">100%</b></span><div class="meter"><i id="hull-bar"></i></div></div><div><span>SHIPS</span><strong id="lives">3</strong></div></div>
+   <div class="screen" id="screen"><canvas id="game" width="320" height="200" tabindex="0" aria-label="Piranha playfield. Arrow keys rotate and thrust, Space fires."></canvas><button id="intro-start" class="intro-start" hidden>Press any key · click or tap to start</button><div class="scanlines" id="scanlines"></div><div id="notice" class="notice" aria-live="polite"></div><div id="salvage" class="salvage" hidden></div><div id="overlay" class="overlay" hidden><span class="eyebrow" id="overlay-label">FLIGHT SUSPENDED</span><h2 id="overlay-title">Paused</h2><p id="overlay-copy"></p><button class="primary" id="overlay-action">Resume flight <span>↗</span></button><button class="quiet" id="return-title">Return to title</button></div></div>
+   <div class="touch-controls" role="group" aria-label="Touch flight controls">
+    <div class="touch-steering">
+     <button data-control="left" aria-label="Hold to rotate left" aria-pressed="false" disabled>↶<small>LEFT</small></button>
+     <button data-control="thrust" aria-label="Hold to thrust" aria-pressed="false" disabled>THRUST</button>
+     <button data-control="right" aria-label="Hold to rotate right" aria-pressed="false" disabled>↷<small>RIGHT</small></button>
+     <button data-control="brake" aria-label="Hold to brake" aria-pressed="false" disabled>BRAKE</button>
+    </div>
+    <div class="touch-actions">
+     <button data-control="slow" aria-label="Hold for half speed" aria-pressed="false" disabled>SLOW · ½×</button>
+     <button data-control="fire" aria-label="Hold to fire" aria-pressed="false" disabled>FIRE</button>
+    </div>
+   </div>
+   <div class="console"><span id="runtime"><i class="status-dot"></i> Loading original assets…</span><div><button id="pause" title="Pause (P)" disabled>Ⅱ <span>Pause</span></button><button id="mute" title="Toggle audio (M)">♪ <span>Sound on</span></button><button id="debug-toggle" title="Debug tools (F2)" aria-label="Debug tools (F2)" aria-pressed="false" disabled>⌗ <span>Debug</span></button><button id="fullscreen" title="Fullscreen (F)">⛶ <span>Expand</span></button></div></div>
+  </section>
+  <aside>
+   <section class="flight-panel"><span class="eyebrow">FLIGHT CONTROL</span><h2>Ready, pilot?</h2><p>Break apart the asteroids.<br>Take out the enemy ships.<br>Make it to the next level.</p><label class="field-label" for="players">CREW</label><select id="players"><option value="1">1 player</option><option value="2">2 players · local co-op</option><option value="3">3 players · local co-op</option></select><label class="field-label" for="difficulty">DIFFICULTY</label><select id="difficulty" aria-describedby="difficulty-help"><option value="easy" selected>Easy · 2× health</option><option value="normal">Normal · standard health</option></select><label class="field-label" for="start-level">STARTING LEVEL</label><select id="start-level" aria-describedby="difficulty-help"></select><p id="difficulty-help">Difficulty and level apply when you launch or restart.</p><button id="launch" class="primary" disabled>Loading… <span>↗</span></button><div class="best"><span>PERSONAL BEST</span><strong id="best">000000</strong></div></section>
+   <section class="controls"><span class="eyebrow">KNOW YOUR SHIP</span><div><span>Rotate</span><span><kbd>←</kbd> <kbd>→</kbd></span></div><div><span>Thrust</span><kbd>↑</kbd></div><div><span>Brake</span><kbd>↓</kbd></div><div><span>Fire</span><kbd class="wide">SPACE</kbd></div><div><span>Slow motion · hold</span><kbd class="wide">SHIFT</kbd></div><div><span>Pause</span><kbd>P</kbd></div><p class="tip">Keep moving. Your ship keeps its momentum when you release the thrust. Spend collected credits in the shop between levels. On mobile, rotate to landscape during a flight to expand the game.</p><p id="coop-controls" hidden>P2: A / D rotate, W thrust, S brake, E fires.<br>P3: J / L rotate, I thrust, K brake, U fires.</p></section>
+   <label class="toggle"><input id="crt" type="checkbox"> CRT scanlines</label>
+  </aside>
+ </div>
+ <footer><span>Original game & artwork © D-Designs, 1996</span><a href="PORTING.md" target="_blank">Port status & recovery notes ↗</a><span>320 × 200 · VGA aspect ratio</span></footer>
+</main>
+<dialog id="shop-dialog" aria-labelledby="shop-title">
+ <div class="dialog-head"><div><span class="eyebrow">BETWEEN SECTORS</span><h2 id="shop-title">Ship shop</h2></div><button id="shop-close" aria-label="Back to level complete">×</button></div>
+ <div class="shop-wallet"><span>AVAILABLE CREDITS</span><strong id="shop-credits">0</strong></div>
+ <p>Spend your collected credits before the next flight. Purchases apply to the selected pilot.</p>
+ <label class="field-label" for="shop-pilot">PILOT</label><select id="shop-pilot"></select><p id="shop-status"></p>
+ <div id="shop-items" class="shop-items"></div><p id="shop-message" role="status" aria-live="polite"></p>
+ <div class="shop-actions"><span>Credits and upgrades carry into the next level.</span><button id="shop-next" class="primary">Launch next level</button></div>
+</dialog>
+<dialog id="audio-dialog"><div class="dialog-head"><div><span class="eyebrow">THE ORIGINAL RECORDINGS</span><h2>Sound archive</h2></div><button id="audio-close" aria-label="Close sound archive">×</button></div><p>Nine AMF tracker modules, rendered for the browser. Original sample and instrument credits are preserved with each track.</p><div class="audio-volume"><label for="volume">GAME VOLUME</label><input type="range" id="volume" min="0" max="1" step="0.05" value="0.55"></div><h3>Music <span>OGG / MP3</span></h3><div id="music-list">Audio is being prepared.</div><h3>Sound effects <span>LOSSLESS WAV</span></h3><div id="sfx-list"></div><p class="audio-note">Effect previews use playback rates recovered from the assembly. The original game varies these rates to change pitch.</p></dialog>
+<script type="module" src="src/main.js"></script>
+</body></html>

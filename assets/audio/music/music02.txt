@@ -1,0 +1,31 @@
+Extended Module Player 4.2.0
+Copyright (C) 1996-2016 Claudio Matsuoka and Hipolito Carraro Jr
+Using null output
+Mixer set to 44100 Hz, 16bit, cubic spline interpolated stereo
+Press 'h' for help
+
+Loading /Users/fincodr/Desktop/git/piranha/DATA/MUSIC02.DD (1 of 1)
+Module name  : Chromosphere
+Module type  : DSMI 1.4 AMF
+Module length: 33 patterns
+Patterns     : 33
+Instruments  : 12
+Samples      : 12
+Channels     : 10 [ 0 f 0 f 0 f 0 f 0 f ]
+Duration     : 3min20s (main sequence)
+               0min07s (sequence 1 at position 1F)
+               0min07s (sequence 2 at position 20)
+Instruments:
+   Instrument name                  Vl Fade Env Ns Sub  Gv Vl Fine Xpo Pan Sm
+01 . By Prism / EMF in 1994 .       40 0000 --- 01 [01] 40 30 +090 +16 P80 00
+02   - Play only with ST3 -         40 0000 --- 01 [01] 40 34 +100 +16 P80 01
+03                                  40 0000 --- 01 [01] 40 40 +100 +28 P80 02
+04                                  40 0000 --- 01 [01] 40 40 +100 +28 P80 03
+05 All samples from my Korg X3      40 0000 --- 01 [01] 40 40 +103 +16 P80 04
+06                                  40 0000 --- 01 [01] 40 15 +120 +11 P80 05
+07   Contacts: prism@xgw.fi         40 0000 --- 01 [01] 40 20 +100 +28 P80 06
+08                                  40 0000 --- 01 [01] 40 0c +100 +28 P80 07
+09                                  40 0000 --- 01 [01] 40 10 +100 +16 P80 08
+0a                                  40 0000 --- 01 [01] 40 2c +100 +16 P80 09
+0b                                  40 0000 --- 01 [01] 40 2d +090 +16 P80 0a
+0c   (C) 1994 Simo Paakkanen        40 0000 --- 01 [01] 40 22 +100 +04 P80 0b

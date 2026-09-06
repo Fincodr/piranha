@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><title>Piranha shop check</title><link rel="stylesheet" href="../style.css">
+<main><h1>Shop verification</h1><p>Fixture: level 3 complete, 2 pilots, 2,000 credits. Pilot 1 has 130 hull; Pilot 2 needs a new ship.</p><button id="open-shop">Open shop</button><button id="overlay-action">Level complete</button><p id="check-status">Loading…</p></main>
+<script type="module">
+import {Game} from '../src/game.js';import {ShopUI} from '../src/shop-ui.js';import {loadImage} from '../src/renderer.js';import {CollisionMasks} from '../src/collision.js';
+const [html,atlas,data,bytes]=await Promise.all([fetch('../index.html').then(r=>r.text()),loadImage('../assets/atlas.png'),fetch('../assets/atlas.json').then(r=>r.json()),fetch('../assets/collision.bin').then(r=>r.arrayBuffer())]);
+document.body.append(new DOMParser().parseFromString(html,'text/html').getElementById('shop-dialog'));
+let ui;const update=()=>document.getElementById('check-status').textContent=`${g.state} · Level ${g.level} · Credits ${g.credits} · `+g.players.map((p,i)=>`Pilot ${i+1}: hull ${p.hp}, ships ${p.lives}, weapon ${p.weapon}, ammo ${p.ammoLevel}, engine ${p.engineLevel}`).join(' · ');
+const g=new Game(event=>{if(event==='shop')ui.show();update();},new CollisionMasks(data,new Uint8Array(bytes)));
+g.start(2,3);g.clearEncounter();g.credits=2000;g.players[0].hp=130;g.players[1].hp=0;g.players[1].lives=0;g.players[1].dead=true;g.state='cleared';
+ui=new ShopUI(g,atlas,data,update);document.getElementById('open-shop').addEventListener('click',()=>g.shop.open());update();
+</script>

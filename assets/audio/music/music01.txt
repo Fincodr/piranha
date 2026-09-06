@@ -1,0 +1,44 @@
+Extended Module Player 4.2.0
+Copyright (C) 1996-2016 Claudio Matsuoka and Hipolito Carraro Jr
+Using null output
+Mixer set to 44100 Hz, 16bit, cubic spline interpolated stereo
+Press 'h' for help
+
+Loading /Users/fincodr/Desktop/git/piranha/DATA/MUSIC01.DD (1 of 1)
+Module name  : Can you feel it?
+Module type  : DSMI 1.4 AMF
+Module length: 60 patterns
+Patterns     : 60
+Instruments  : 27
+Samples      : 27
+Channels     : 14 [ 0 f 0 f 0 f 0 f 0 f 0 f 0 f ]
+Duration     : 3min43s
+Instruments:
+   Instrument name                  Vl Fade Env Ns Sub  Gv Vl Fine Xpo Pan Sm
+01 . By Prism / EMF & Plant .       40 0000 --- 01 [01] 40 22 +012 +11 P80 00
+02   - Play only with ST3 -         40 0000 --- 01 [01] 40 2c +100 +04 P80 01
+03                                  40 0000 --- 01 [01] 40 36 +100 +17 P80 02
+04 for the Asm'95 music compo       40 0000 --- 01 [01] 40 35 +100 +17 P80 03
+05                                  40 0000 --- 01 [01] 40 1e +100 +17 P80 04
+06       Duration 3:37              40 0000 --- 01 [01] 40 40 +091 +23 P80 05
+07                                  40 0000 --- 01 [01] 40 40 +091 +23 P80 06
+08 Samples from:                    40 0000 --- 01 [01] 40 40 +091 +23 P80 07
+09   Korg X3                        40 0000 --- 01 [01] 40 40 +091 +23 P80 08
+0a                                  40 0000 --- 01 [01] 40 18 +100 +28 P80 09
+0b                q                 40 0000 --- 01 [01] 40 34 +093 +24 P80 0a
+0c   Kurzweil K2000 archives        40 0000 --- 01 [01] 40 32 +100 +28 P80 0b
+0d                                  40 0000 --- 01 [01] 40 1c +093 +11 P80 0c
+0e                                  40 0000 --- 01 [01] 40 32 +056 +13 P80 0d
+0f                                  40 0000 --- 01 [01] 40 18 +100 +17 P80 0e
+10 Contact me at prism@xgw.fi       40 0000 --- 01 [01] 40 40 +093 +12 P80 0f
+11  or snail mail me at:            40 0000 --- 01 [01] 40 36 +056 +13 P80 10
+12   Simo Paakkanen                 40 0000 --- 01 [01] 40 32 +100 +28 P80 11
+13   Lansirinnetie 22 D             40 0000 --- 01 [01] 40 1d +100 +28 P80 12
+14   00730 Helsinki                 40 0000 --- 01 [01] 40 3a +100 +28 P80 13
+15   Finland                        40 0000 --- 01 [01] 40 15 +100 +17 P80 14
+16                                  40 0000 --- 01 [01] 40 33 +093 +12 P80 15
+17                                  40 0000 --- 01 [01] 40 10 +100 +17 P80 16
+18 Hey-ho's to all my friends.      40 0000 --- 01 [01] 40 0c +126 +14 P80 17
+19                                  40 0000 --- 01 [01] 40 0c +000 +13 P80 18
+1a                                  40 0000 --- 01 [01] 40 32 +100 +17 P80 19
+1b  (C) 1995 Simo Paakkanen         40 0000 --- 01 [01] 40 23 +100 +17 P80 1a

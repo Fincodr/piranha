@@ -1,0 +1,13 @@
+<!doctype html><meta charset="utf-8"><title>Piranha effects check</title>
+<style>body{background:#161419;color:#ddd;font:15px sans-serif;margin:24px}canvas{display:block;width:960px;height:720px;image-rendering:pixelated}p{max-width:900px}</style>
+<h1>Recovered exhaust and pickup artwork</h1><p>Three ship directions with five thrust updates. Bottom row: 10, 50, 100 credits, mystery, bomb, weapon, energy, extra ship.</p>
+<canvas width="320" height="200" id="game"></canvas><p id="result">Loading…</p>
+<script type="module">
+import {Game,TICK} from '../src/game.js';import {Renderer,loadImage} from '../src/renderer.js';import {CollisionMasks} from '../src/collision.js';
+const [atlas,data,background,bytes]=await Promise.all([loadImage('../assets/atlas.png'),fetch('../assets/atlas.json').then(r=>r.json()),loadImage('../assets/background1.png'),fetch('../assets/collision.bin').then(r=>r.arrayBuffer())]);
+const g=new Game(()=>{},new CollisionMasks(data,new Uint8Array(bytes))),r=new Renderer(document.getElementById('game'),atlas,data);r.setBackground(background);
+g.start(3);g.clearEncounter();g.players.forEach((p,i)=>{p.x=60+i*100;p.y=70;p.angle=i*Math.PI/4;});
+for(let n=0;n<5;n++)g.update(TICK,[{thrust:true},{thrust:true},{thrust:true}]);g.players.forEach(p=>p.invincible=0);
+for(let type=1;type<=8;type++)g.pickups.spawn(type,25+(type-1)*38,150);
+g.state='paused';g.render(r);document.getElementById('result').textContent=`${r.name}: ${g.effects.count} original exhaust sprites, 8 pickups, ${r.drawCalls} draw calls.`;
+</script>

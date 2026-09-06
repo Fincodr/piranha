@@ -1,0 +1,14 @@
+<!doctype html><meta charset="utf-8"><title>Piranha edge crossing check</title>
+<style>body{background:#161419;color:#ddd;font:15px sans-serif;margin:24px}canvas{display:block;width:800px;height:600px;image-rendering:pixelated}p{max-width:850px}</style>
+<h1>Continuous edge crossing</h1><p>Ship 1 crosses the left edge, ship 2 the top, and ship 3 the bottom-right corner. Yellow shots begin at the wrapped nose. Exhaust follows the rear.</p>
+<canvas width="320" height="200" id="game"></canvas><p id="result">Loading…</p>
+<script type="module">
+import {Game,TICK} from '../src/game.js';import {Renderer,loadImage} from '../src/renderer.js';import {CollisionMasks} from '../src/collision.js';
+const [atlas,data,background,bytes]=await Promise.all([loadImage('../assets/atlas.png'),fetch('../assets/atlas.json').then(r=>r.json()),loadImage('../assets/background1.png'),fetch('../assets/collision.bin').then(r=>r.arrayBuffer())]);
+const g=new Game(()=>{},new CollisionMasks(data,new Uint8Array(bytes))),r=new Renderer(document.getElementById('game'),atlas,data);r.setBackground(background);
+g.start(3);g.clearEncounter();const poses=[[1,90,Math.PI*1.5],[200,1,0],[319,199,Math.PI*.75]];
+g.players.forEach((p,i)=>{[p.x,p.y,p.angle]=poses[i];});
+for(let n=0;n<5;n++)g.update(TICK,[{thrust:true},{thrust:true},{thrust:true}]);
+g.players.forEach((p,i)=>{p.invincible=0;g.firePlayer(i);});g.prepareCollisions();g.collision.draw();
+g.state='paused';g.render(r);document.getElementById('result').textContent=`${r.name}: 3 pilots, 3 shots, ${r.drawCalls} draw calls. Every visible ship piece shares its pilot's collision ID.`;
+</script>

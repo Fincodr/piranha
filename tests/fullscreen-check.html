@@ -1,0 +1,23 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Mobile fullscreen check</title>
+<style>body{background:#111;color:#eee;font:14px sans-serif}button{padding:10px}iframe{display:block;border:0;margin-top:10px;width:844px;height:390px}#status{white-space:pre-wrap}</style>
+<p>Touch-device fixture with native fullscreen unavailable. Start a flight, then rotate or use Expand.</p>
+<button id="portrait">Portrait</button> <button id="landscape">Landscape</button> <button id="short">Landscape with browser bars</button>
+<pre id="status"></pre><iframe title="Simulated mobile browser"></iframe>
+<script type="module">
+const frame=document.querySelector('iframe');
+let html=await fetch('../index.html').then(r=>r.text());
+html=html.replace('<head>','<head><base href="../">').replace('<script type="module" src="src/main.js">','<script>Object.defineProperty(navigator,"maxTouchPoints",{value:1});Object.defineProperty(document,"fullscreenEnabled",{value:false});<\/script><script type="module" src="src/main.js">');
+frame.srcdoc=html;
+function size(w,h){frame.style.width=w+'px';frame.style.height=h+'px';}
+document.querySelector('#portrait').onclick=()=>size(390,620);
+document.querySelector('#landscape').onclick=()=>size(844,390);
+document.querySelector('#short').onclick=()=>size(667,300);
+setInterval(()=>{
+ const doc=frame.contentDocument,cabinet=doc?.querySelector('#cabinet');if(!cabinet)return;
+ const screen=doc.querySelector('#screen').getBoundingClientRect();
+ const buttons=[...doc.querySelectorAll('[data-control],#fullscreen')];
+ const height=frame.clientHeight,width=frame.clientWidth;
+ const fit=buttons.every(b=>{const r=b.getBoundingClientRect();return r.x>=0&&r.y>=0&&r.right<=width+1&&r.bottom<=height+1;});
+ document.querySelector('#status').textContent=`Viewport ${width}×${height} · Expanded ${cabinet.classList.contains('expanded')} · All controls fit: ${fit}\nPlayfield aspect ${(screen.width/screen.height).toFixed(3)} (target 1.333)`;
+},250);
+</script></html>
